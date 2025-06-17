@@ -10,6 +10,8 @@ lerna-debug.log*
 # Build outputs
 dist/
 dist-ssr/
+apps/api/dist/
+libs/*/dist/
 *.local
 
 # Editor directories and files
