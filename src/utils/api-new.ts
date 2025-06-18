@@ -11,7 +11,7 @@ export const api = axios.create({
   },
 })
 
-// Mock data for fallback when backend is unavailable
+// Mock data for fallback
 const mockResults: SearchResult[] = [
   {
     id: '1',
@@ -43,26 +43,6 @@ const mockResults: SearchResult[] = [
     amenities: ['WiFi', 'Business Center', 'Gym', 'Conference Room'],
     ctaUrl: '/booking/3',
   },
-  {
-    id: '4',
-    name: 'Historic Boutique Inn',
-    price: 179,
-    rating: 4.5,
-    photo: 'https://images.unsplash.com/photo-1590490360182-c33d57733427?w=400',
-    transit: '3 min walk to Metro',
-    amenities: ['WiFi', 'Restaurant', 'Historic Tours'],
-    ctaUrl: '/booking/4',
-  },
-  {
-    id: '5',
-    name: 'Family Resort & Spa',
-    price: 349,
-    rating: 4.9,
-    photo: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=400',
-    transit: '10 min drive to City Center',
-    amenities: ['WiFi', 'Pool', 'Spa', 'Kids Club', 'Restaurant', 'Bar', 'Tennis Court'],
-    ctaUrl: '/booking/5',
-  },
 ]
 
 // Fallback mock data function
@@ -71,26 +51,25 @@ const getMockResults = (criteria: SearchCriteria): SearchResult[] => {
   
   // Simple filtering based on destination
   if (criteria.destination.toLowerCase().includes('paris')) {
-    results = results.slice(0, 3)
+    results = results.slice(0, 2)
   } else if (criteria.destination.toLowerCase().includes('tokyo')) {
-    results = results.slice(1, 4)
+    results = results.slice(1, 3)
   }
   
   // Add more results for demonstration
-  const additionalResults = Array.from({ length: 20 }, (_, i) => ({
+  const additionalResults = Array.from({ length: 15 }, (_, i) => ({
     ...mockResults[i % mockResults.length],
-    id: `${mockResults[i % mockResults.length].id}-${i + 6}`,
-    name: `${mockResults[i % mockResults.length].name} ${i + 6}`,
+    id: `${mockResults[i % mockResults.length].id}-${i + 4}`,
+    name: `${mockResults[i % mockResults.length].name} ${i + 4}`,
     price: mockResults[i % mockResults.length].price + (i * 10),
   }))
   
   return [...results, ...additionalResults]
 }
 
-// Real backend hotel search via our proxy server
+// Real backend hotel search
 export const searchApi = async (criteria: SearchCriteria): Promise<SearchResult[]> => {
-  console.log('🔍 Searching hotels via backend API...', criteria)
-  console.log('🌐 API Base URL:', API_BASE_URL)
+  console.log('🔍 Searching hotels via backend API...')
   
   try {
     const response = await api.post('/search', {
@@ -100,12 +79,11 @@ export const searchApi = async (criteria: SearchCriteria): Promise<SearchResult[
       guests: criteria.guests
     })
     
-    console.log('✅ Backend response:', response.data)
     console.log(`✅ Backend returned ${response.data.count} real hotels`)
     return response.data.data
-      } catch (error: any) {
+    
+  } catch (error) {
     console.error('❌ Backend search failed:', error)
-    console.error('❌ Error details:', error.response?.data || error.message)
     
     // Fallback to mock data if backend is down
     console.log('🔄 Using fallback mock data')
@@ -113,7 +91,7 @@ export const searchApi = async (criteria: SearchCriteria): Promise<SearchResult[
   }
 }
 
-// Real backend city search via our proxy server
+// Real backend city search
 export const getCityAutocomplete = async (query: string): Promise<string[]> => {
   if (query.length < 2) return []
   
@@ -150,37 +128,11 @@ export const getCityAutocomplete = async (query: string): Promise<string[]> => {
       'Copenhagen, Denmark',
       'Stockholm, Sweden',
       'Los Angeles, United States',
-      'Miami, United States',
-      'Istanbul, Turkey',
-      'Mumbai, India',
-      'Delhi, India',
-      'Seoul, South Korea',
-      'Hong Kong, China',
-      'Shanghai, China',
-      'Beijing, China',
-      'Melbourne, Australia',
-      'Cairo, Egypt',
-      'Athens, Greece',
-      'Lisbon, Portugal',
-      'Oslo, Norway',
-      'Zurich, Switzerland',
-      'Brussels, Belgium'
+      'Miami, United States'
     ]
     
     return cities.filter(city => 
       city.toLowerCase().includes(query.toLowerCase())
     ).slice(0, 5)
-  }
-}
-
-// Health check for backend connectivity
-export const checkBackendHealth = async (): Promise<boolean> => {
-  try {
-    const response = await api.get('/health')
-    console.log('✅ Backend health check passed:', response.data)
-    return true
-  } catch (error) {
-    console.error('❌ Backend health check failed:', error)
-    return false
   }
 }

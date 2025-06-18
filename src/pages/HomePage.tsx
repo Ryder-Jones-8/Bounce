@@ -31,10 +31,16 @@ const HomePage: React.FC = () => {
     updateCriteria({ destination: city })
     setShowSuggestions(false)
   }
-
   const handleSearch = () => {
     if (!state.criteria.destination || !state.criteria.startDate || !state.criteria.endDate) {
       alert('Please fill in all required fields')
+      return
+    }
+
+    // Validate destination format (city, state/country)
+    const hasComma = state.criteria.destination.includes(',')
+    if (!hasComma) {
+      alert('Please select a city from the dropdown suggestions (e.g., "New York, NY" or "Paris, France")')
       return
     }
 
@@ -64,11 +70,10 @@ const HomePage: React.FC = () => {
         </div>
 
         <div className="max-w-4xl mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {/* Destination Input */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">            {/* Destination Input */}
             <div className="relative lg:col-span-2">
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Where are you going?
+                Where are you going? *
               </label>
               <input
                 type="text"
@@ -78,8 +83,13 @@ const HomePage: React.FC = () => {
                   updateCriteria({ destination: e.target.value })
                 }}
                 className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                placeholder="City, country, or region"
+                placeholder="Type city name... (e.g., New York, NY)"
               />
+              
+              {/* Helper text */}
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                Please select a city from the dropdown suggestions
+              </p>
               
               {/* Autocomplete Suggestions */}
               {showSuggestions && citySuggestions.length > 0 && (

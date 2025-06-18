@@ -6,6 +6,7 @@ import LoadingSpinner from './components/LoadingSpinner'
 // Lazy load pages for code splitting
 const HomePage = lazy(() => import('./pages/HomePage'))
 const ResultsPage = lazy(() => import('./pages/ResultsPage'))
+const HotelDetailPage = lazy(() => import('./pages/HotelDetailPage'))
 
 const App: React.FC = () => {
   const { isDark, toggleTheme } = useTheme()
@@ -20,13 +21,12 @@ const App: React.FC = () => {
           aria-label="Toggle theme"
         >
           {isDark ? '🌞' : '🌚'}
-        </button>
-
-        {/* Routes */}
+        </button>        {/* Routes */}
         <Suspense fallback={<LoadingSpinner />}>
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/results" element={<ResultsPage />} />
+            <Route path="/hotel/:hotelId" element={<HotelDetailPage />} />
           </Routes>
         </Suspense>
       </div>
